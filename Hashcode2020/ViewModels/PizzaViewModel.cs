@@ -8,6 +8,6 @@ namespace Hashcode2020.ViewModels
     {
         public int PizzaPiecesLimit { get; set; }
         public int PizzaTypeCount { get; set; }
-        public IEnumerable<int> PizzaSlicesSizes { get; set; }
+        public Dictionary<int, int> PizzaSlicesSizes { get; set; }
     }
 }

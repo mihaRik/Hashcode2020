@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Hashcode2020.Constants
 {
-    public class InputTypes
+    public class PizzaTypes
     {
         public const string Example = "a_example.in";
         public const string Small = "b_small.in";

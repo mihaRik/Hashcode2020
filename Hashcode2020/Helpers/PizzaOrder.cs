@@ -12,7 +12,7 @@ namespace Hashcode2020.Helpers
     {
         public static void ProcessOrderV1(PizzaViewModel pizza)
         {
-            var arrSum = pizza.PizzaSlicesSizes.Sum();
+            var arrSum = pizza.PizzaSlicesSizes.Sum(s => s.Value);
 
             if (arrSum < pizza.PizzaPiecesLimit)
                 WriteLine(arrSum);
@@ -23,7 +23,7 @@ namespace Hashcode2020.Helpers
             {
                 var diff = arrSum - pizza.PizzaPiecesLimit;
 
-                helper = pizza.PizzaSlicesSizes.FirstOrDefault(s => s >= diff);
+                helper = pizza.PizzaSlicesSizes.FirstOrDefault(s => s.Value >= diff).Value;
 
                 if (arrSum - helper < pizza.PizzaPiecesLimit)
                     WriteLine(arrSum - helper);
@@ -32,14 +32,67 @@ namespace Hashcode2020.Helpers
             }
         }
 
-        public static void ProcessOrderV2(PizzaViewModel pizza)
+        public static IEnumerable<KeyValuePair<int, int>> ProcessOrderV2(PizzaViewModel pizza)
         {
-            var avg = pizza.PizzaSlicesSizes.Average();
+            var avg = pizza.PizzaSlicesSizes.Average(s => s.Value);
             var takeCount = pizza.PizzaPiecesLimit / avg;
 
             var takenArr = pizza.PizzaSlicesSizes.Take((int)takeCount);
 
-            WriteLine(takenArr.Sum());
+            return takenArr;
+        }
+
+        public static IEnumerable<KeyValuePair<int, int>> ProcessOrderV3(PizzaViewModel pizza)
+        {
+            var sum = 0;
+            var arr = pizza.PizzaSlicesSizes.ToArray();
+            var limit = pizza.PizzaPiecesLimit;
+            var finalArr = new Dictionary<int, int>();
+
+            for (int i = 0; i < arr.Length; i++)
+            {
+                if (sum + arr[i].Value <= limit)
+                {
+                    sum += arr[i].Value;
+                    finalArr.Add(arr[i].Key, arr[i].Value);
+                }
+                else if (sum == limit) return finalArr;
+                else if (arr.Any(a => a.Value == sum + arr[i].Value - limit))
+                {
+                    finalArr.Remove(arr.First(a => a.Value == sum + arr[i].Value - limit).Key);
+                    finalArr.Add(arr[i].Key, arr[i].Value);
+                    return finalArr;
+                }
+            }
+
+            return finalArr;
+        }
+
+        public static IEnumerable<KeyValuePair<int, int>> ProcessOrderV4(PizzaViewModel pizza)
+        {
+            var sum = 0;
+            var arr = pizza.PizzaSlicesSizes.ToArray();
+            var limit = pizza.PizzaPiecesLimit;
+            var finalArr = new Dictionary<int, int>();
+
+            for (int i = 0; i < arr.Length; i++)
+            {
+                if (sum + arr[i].Value <= limit)
+                {
+                    sum += arr[i].Value;
+                    finalArr.Add(arr[i].Key, arr[i].Value);
+                }
+                else if (sum == limit) return finalArr.OrderBy(a => a.Key);
+                else if (arr.Any(a => a.Value > sum + arr[i].Value - limit))
+                {
+                    var elementToRemove = arr.First(a => a.Value >= sum + arr[i].Value - limit).Key;
+                    finalArr.Remove(elementToRemove);
+                    finalArr.Add(arr[i].Key, arr[i].Value);
+                    return finalArr.OrderBy(a => a.Key);
+                }
+            }
+
+            return finalArr.OrderBy(a => a.Key);
         }
     }
 }

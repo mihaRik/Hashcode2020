@@ -11,10 +11,19 @@ namespace Hashcode2020
     {
         static void Main(string[] args)
         {
-            var pizza = FileReader.GetPizza(InputTypes.Example).Result;
+            var pizzaType = PizzaTypes.Example;
+
+            var pizza = FileReader.GetPizzaAsync(pizzaType).Result;
+
             //PizzaOrder.ProcessOrderV1(pizza);
 
-            PizzaOrder.ProcessOrderV2(pizza);
+            //PizzaOrder.ProcessOrderV2(pizza);
+
+            var result = PizzaOrder.ProcessOrderV4(pizza);
+
+            WriteLine(result.Sum(r => r.Value));
+
+            //FileWriter.CreateOutputFileForAllTypesAsync().Wait();
         }
     }
 }
